@@ -1,461 +1,129 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!-- Metadatos -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Reserva Fácil — Reserva tu mesa en los mejores restaurantes" />
-  <meta name="author" content="Reserva Fácil" />
-  <title>Reserva Fácil — Reservas</title>
-
-  <!-- Fuente externa incrustada (elemento externo) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
-
-  <!-- Hoja de estilos externa -->
-  <link rel="stylesheet" href="styles.css" />
+  <title>ReservaFácil</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #a78bfa; --purple-light: #ede9fe; --purple-dark: #7c3aed;
+      --pink: #f472b6;   --pink-light: #fce7f3;
+      --blue: #60a5fa;   --blue-light: #dbeafe;
+      --grad: linear-gradient(135deg, #f5f0ff 0%, #fff0f8 50%, #f0f4ff 100%);
+      --text: #1e1b4b; --muted: #6b7280; --border: #e5e7eb;
+    }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--grad); min-height: 100vh; display: flex; flex-direction: column; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 32px; background: rgba(255,255,255,.85); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; color: var(--text); cursor: pointer; }
+    .brand-icon { width: 34px; height: 34px; background: linear-gradient(135deg, var(--purple), var(--pink)); border-radius: 10px; display: grid; place-items: center; font-size: 16px; }
+    .nav-links { display: flex; gap: 8px; }
+    .nav-btn { padding: 8px 16px; border-radius: 10px; font-size: .875rem; font-weight: 500; color: var(--text); background: none; border: 1px solid var(--border); cursor: pointer; transition: all .2s; font-family: inherit; }
+    .nav-btn:hover, .nav-btn.active { background: var(--purple-light); border-color: var(--purple); color: var(--purple-dark); }
+    .nav-btn.cta { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: white; border-color: transparent; }
+    .section { display: none; flex: 1; animation: fadeUp .35s ease; }
+    .section.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .auth-wrap { flex:1; display:grid; place-items:center; padding:48px 16px; }
+    .auth-card { background:white; border-radius:24px; padding:48px 44px; box-shadow:0 8px 40px rgba(124,58,237,.08); width:100%; max-width:440px; }
+    .auth-icon { width:64px; height:64px; border-radius:18px; display:grid; place-items:center; font-size:28px; margin:0 auto 20px; }
+    .auth-icon.purple { background: linear-gradient(135deg, var(--purple-light), #d8b4fe); }
+    .auth-icon.blue   { background: linear-gradient(135deg, var(--blue-light), #93c5fd); }
+    .auth-card h1 { text-align:center; font-size:1.75rem; font-weight:700; margin-bottom:6px; color:var(--text); }
+    .auth-subtitle { text-align:center; color:var(--muted); font-size:.9rem; margin-bottom:32px; }
+    .form-group { margin-bottom:20px; }
+    .form-group label { display:block; font-size:.85rem; font-weight:500; margin-bottom:6px; color:var(--text); }
+    .form-group input { width:100%; padding:12px 16px; border:1.5px solid var(--border); border-radius:12px; font-size:.95rem; font-family:inherit; outline:none; transition:border-color .2s, box-shadow .2s; }
+    .form-group input:focus { border-color:var(--purple); box-shadow:0 0 0 3px rgba(167,139,250,.2); }
+    .form-group input.blue-input:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(96,165,250,.2); }
+    .btn-submit { width:100%; padding:14px; border:none; border-radius:12px; cursor:pointer; font-family:inherit; font-size:1rem; font-weight:600; color:white; margin-bottom:20px; transition:all .2s; }
+    .btn-submit.purple { background: linear-gradient(135deg, var(--purple), #c084fc); }
+    .btn-submit.blue   { background: linear-gradient(135deg, var(--blue), #818cf8); }
+    .btn-submit:hover  { opacity:.9; transform:translateY(-1px); }
+    .auth-foot { text-align:center; font-size:.875rem; color:var(--muted); }
+    .auth-foot span { color:var(--purple); font-weight:500; cursor:pointer; }
+    .auth-foot span:hover { text-decoration:underline; }
+    .dash-main { flex:1; padding:48px 32px; max-width:1100px; width:100%; margin:0 auto; }
+    .hero { text-align:center; margin-bottom:40px; }
+    .hero h1 { font-size:2.4rem; font-weight:700; margin-bottom:8px; color:var(--text); }
+    .hero p  { color:var(--muted); margin-bottom:28px; }
+    .hero-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+    .dash-btn { padding:13px 26px; border:none; border-radius:14px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; color:white; display:inline-flex; align-items:center; gap:8px; transition:all .2s; }
+    .dash-btn.purple { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); }
+    .dash-btn.pink   { background: linear-gradient(135deg, var(--pink), #ec4899); }
+    .dash-btn:hover  { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.15); }
+    .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:28px; }
+    .stat-card { background:white; border-radius:20px; padding:28px; box-shadow:0 2px 16px rgba(0,0,0,.05); display:flex; align-items:flex-start; justify-content:space-between; }
+    .stat-label { font-weight:600; font-size:.95rem; color:var(--text); }
+    .stat-num   { font-size:2.5rem; font-weight:700; margin:8px 0 4px; }
+    .stat-num.purple { color:var(--purple-dark); }
+    .stat-num.pink   { color:#ec4899; }
+    .stat-sub        { font-size:.8rem; color:var(--muted); }
+    .stat-sub.green  { color:#10b981; font-weight:500; }
+    .stat-icon { width:48px; height:48px; border-radius:14px; display:grid; place-items:center; font-size:22px; flex-shrink:0; }
+    .stat-icon.purple { background:var(--purple-light); }
+    .stat-icon.pink   { background:var(--pink-light); }
+    .activity { background:white; border-radius:20px; padding:28px; box-shadow:0 2px 16px rgba(0,0,0,.05); }
+    .activity h2  { font-size:1.15rem; font-weight:700; margin-bottom:4px; color:var(--text); }
+    .activity-sub { font-size:.82rem; color:var(--muted); margin-bottom:20px; }
+    .res-item { display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:12px; margin-bottom:10px; background:#fafafa; transition:background .2s; }
+    .res-item:hover { background:var(--purple-light); }
+    .res-icon { width:38px; height:38px; border-radius:10px; display:grid; place-items:center; font-size:16px; flex-shrink:0; }
+    .res-icon.purple { background:var(--purple-light); }
+    .res-icon.pink   { background:var(--pink-light); }
+    .res-icon.blue   { background:var(--blue-light); }
+    .res-info { flex:1; }
+    .res-info strong { display:block; font-size:.9rem; font-weight:600; color:var(--text); }
+    .res-info span   { font-size:.8rem; color:var(--muted); }
+    .res-time { text-align:right; }
+    .res-time strong { display:block; font-size:.9rem; font-weight:600; color:var(--text); }
+    .res-time span   { font-size:.75rem; color:var(--muted); }
+    .about-main { flex:1; padding:60px 32px; max-width:900px; width:100%; margin:0 auto; }
+    .about-hero { text-align:center; margin-bottom:48px; }
+    .about-icon { width:72px; height:72px; border-radius:20px; background:linear-gradient(135deg,#fbbf24,#f59e0b); display:grid; place-items:center; font-size:30px; margin:0 auto 20px; }
+    .about-hero h1 { font-size:2.8rem; font-weight:700; margin-bottom:12px; color:var(--text); }
+    .about-hero p  { color:var(--muted); max-width:560px; margin:0 auto; line-height:1.6; }
+    .info-card { background:white; border-radius:20px; padding:32px; margin-bottom:20px; box-shadow:0 2px 16px rgba(0,0,0,.05); }
+    .info-card h2 { font-size:1.1rem; font-weight:700; margin-bottom:12px; color:var(--text); }
+    .info-card p  { color:var(--muted); line-height:1.7; }
+    .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px; }
+    .feat { background:white; border-radius:20px; padding:28px 20px; text-align:center; box-shadow:0 2px 16px rgba(0,0,0,.05); }
+    .feat-icon { width:56px; height:56px; border-radius:16px; display:grid; place-items:center; font-size:24px; margin:0 auto 14px; }
+    .feat-icon.purple { background:var(--purple-light); }
+    .feat-icon.pink   { background:var(--pink-light); }
+    .feat-icon.blue   { background:var(--blue-light); }
+    .feat h3 { font-size:.95rem; font-weight:700; margin-bottom:8px; color:var(--text); }
+    .feat p  { font-size:.82rem; color:var(--muted); line-height:1.6; }
+    .dev-card { background:linear-gradient(135deg,#fffbeb,#fef3c7); border-radius:20px; padding:24px 28px; display:flex; align-items:flex-start; gap:14px; box-shadow:0 2px 16px rgba(0,0,0,.05); }
+    .dev-card h3 { font-weight:700; margin-bottom:4px; color:var(--text); }
+    .dev-card p  { font-size:.87rem; color:#92400e; line-height:1.6; }
+    footer { text-align:center; padding:20px; font-size:.8rem; color:var(--muted); border-top:1px solid var(--border); background:rgba(255,255,255,.5); }
+    @media(max-width:680px) {
+      .stats-grid { grid-template-columns:1fr; }
+      .features-grid { grid-template-columns:1fr; }
+      .auth-card { padding:32px 20px; }
+      .dash-main, .about-main { padding:28px 16px; }
+      nav { padding:12px 16px; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ================================================
-     BARRA DE NAVEGACIÓN
-================================================ -->
-<header class="navbar" id="navbar">
-  <div class="nav-inner">
-
-    <!-- Logo -->
-    <a href="#" class="nav-logo">Reserva<span> Fácil</span></a>
-
-    <!-- Menú principal -->
-    <nav aria-label="Navegación principal">
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#inicio"        class="nav-link active">Inicio</a></li>
-        <li><a href="#reservar"      class="nav-link">Reservar</a></li>
-        <li><a href="#restaurantes"  class="nav-link">Restaurantes</a></li>
-        <li><a href="#experiencia"   class="nav-link">Experiencia</a></li>
-      </ul>
-    </nav>
-
-    <!-- CTA escritorio -->
-    <a href="#reservar" class="btn btn-primary btn-sm nav-cta">Reservar ahora</a>
-
-    <!-- Botón menú móvil -->
-    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-
+<nav>
+  <div id="brand" class="brand">
+    <div class="brand-icon">🏛️</div>
+    ReservaFácil
   </div>
-</header>
+  <div id="navLinks" class="nav-links"></div>
+</nav>
 
+<div id="sec-login"     class="section active"></div>
+<div id="sec-register"  class="section"></div>
+<div id="sec-dashboard" class="section"></div>
+<div id="sec-about"     class="section"></div>
 
-<!-- ================================================
-     HERO
-================================================ -->
-<section class="hero" id="inicio">
+<footer id="footerBar"></footer>
 
-  <!-- Fondo visual (elemento multimedia) -->
-  <div class="hero-bg" role="img" aria-label="Ambiente de restaurante elegante"></div>
-
-  <div class="hero-content">
-    <p class="eyebrow hero-eyebrow">La mejor mesa te espera</p>
-    <h1 class="display hero-title">
-      Vive una<br />
-      <em>experiencia</em><br />
-      inolvidable
-    </h1>
-    <p class="hero-sub">
-      Reserva tu mesa en los restaurantes más exclusivos de la ciudad,
-      en segundos y sin complicaciones.
-    </p>
-    <div class="hero-btns">
-      <a href="#reservar" class="btn btn-primary">Reservar mesa</a>
-      <!-- Enlace con ruta vacía (requerido) -->
-      <a href="#" class="btn btn-ghost">Ver restaurantes</a>
-    </div>
-  </div>
-
-  <!-- Cinta de restaurantes destacados -->
-  <div class="hero-strip">
-    <div class="hero-strip-inner">
-      <span class="strip-label">Destacados hoy</span>
-      <div class="strip-divider"></div>
-      <ul class="strip-items">
-        <li class="strip-item">
-          <span class="strip-dot"></span>
-          <div><span class="strip-name">La Brasa</span><span class="strip-cuisine"> · Parrilla</span></div>
-        </li>
-        <li class="strip-item">
-          <span class="strip-dot"></span>
-          <div><span class="strip-name">Cielito</span><span class="strip-cuisine"> · Fusión</span></div>
-        </li>
-        <li class="strip-item">
-          <span class="strip-dot"></span>
-          <div><span class="strip-name">El Jardín</span><span class="strip-cuisine"> · Mediterránea</span></div>
-        </li>
-        <li class="strip-item">
-          <span class="strip-dot"></span>
-          <div><span class="strip-name">Umami</span><span class="strip-cuisine"> · Japonesa</span></div>
-        </li>
-        <li class="strip-item">
-          <span class="strip-dot"></span>
-          <div><span class="strip-name">Mar Adentro</span><span class="strip-cuisine"> · Mariscos</span></div>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-</section>
-
-
-<!-- ================================================
-     SECCIÓN: FORMULARIO DE RESERVA
-================================================ -->
-<section class="reserve" id="reservar">
-  <div class="wrap">
-    <div class="reserve-grid">
-
-      <!-- Columna de información -->
-      <div class="reserve-info reveal">
-        <p class="eyebrow" style="margin-bottom:.9rem">Reserva online</p>
-        <h2 class="display">Elige tu mesa perfecta</h2>
-        <p>Selecciona el restaurante, la fecha, la hora y el número de comensales. Confirmamos tu mesa en menos de 2 minutos.</p>
-
-        <ul class="info-list">
-          <li class="info-item">
-            <div class="info-icon">+</div>
-            <div class="info-icon-text">
-              <strong>Confirmación instantánea</strong>
-              <span>Recibe tu confirmación al instante por correo.</span>
-            </div>
-          </li>
-          <li class="info-item">
-            <div class="info-icon">*</div>
-            <div class="info-icon-text">
-              <strong>Sin tarjeta requerida</strong>
-              <span>Reserva gratis, paga cuando llegues.</span>
-            </div>
-          </li>
-          <li class="info-item">
-            <div class="info-icon">~</div>
-            <div class="info-icon-text">
-              <strong>Cancelación flexible</strong>
-              <span>Modifica o cancela hasta 2 horas antes.</span>
-            </div>
-          </li>
-          <li class="info-item">
-            <div class="info-icon">#</div>
-            <div class="info-icon-text">
-              <strong>Más de 40 restaurantes</strong>
-              <span>La mayor selección gastronómica de la ciudad.</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Tarjeta del formulario -->
-      <div class="reserve-form-card reveal">
-        <h3 class="form-title">Nueva reserva</h3>
-        <p class="form-subtitle">Completa los datos y confirma tu mesa en segundos.</p>
-
-        <!-- Formulario con atributos según su naturaleza -->
-        <form class="rform" id="reservaForm" action="#" method="post" novalidate
-              aria-label="Formulario de reserva de mesa">
-
-          <!-- Nombre -->
-          <div class="fgroup">
-            <label class="flabel" for="rNombre">Nombre <span class="req">*</span></label>
-            <input type="text" id="rNombre" name="nombre" class="finput"
-                   placeholder="María López" required minlength="3" maxlength="80"
-                   autocomplete="given-name" />
-            <span class="ferror" role="alert" aria-live="polite"></span>
-          </div>
-
-          <!-- Correo -->
-          <div class="fgroup">
-            <label class="flabel" for="rEmail">Correo <span class="req">*</span></label>
-            <input type="email" id="rEmail" name="email" class="finput"
-                   placeholder="maria@email.com" required autocomplete="email" />
-            <span class="ferror" role="alert" aria-live="polite"></span>
-          </div>
-
-          <!-- Teléfono -->
-          <div class="fgroup">
-            <label class="flabel" for="rTel">Teléfono</label>
-            <input type="tel" id="rTel" name="telefono" class="finput"
-                   placeholder="+57 300 000 0000" pattern="[\+\d\s\-]{7,20}"
-                   autocomplete="tel" />
-          </div>
-
-          <!-- Restaurante -->
-          <div class="fgroup">
-            <label class="flabel" for="rRestaurante">Restaurante <span class="req">*</span></label>
-            <select id="rRestaurante" name="restaurante" class="fselect" required>
-              <option value="" disabled selected>Selecciona…</option>
-              <option value="la-brasa">La Brasa — Parrilla</option>
-              <option value="cielito">Cielito — Fusión</option>
-              <option value="el-jardin">El Jardín — Mediterránea</option>
-              <option value="umami">Umami — Japonesa</option>
-              <option value="mar-adentro">Mar Adentro — Mariscos</option>
-              <option value="terra">Terra — Italiana</option>
-              <option value="la-villa">La Villa — Francesa</option>
-            </select>
-            <span class="ferror" role="alert" aria-live="polite"></span>
-          </div>
-
-          <!-- Fecha -->
-          <div class="fgroup">
-            <label class="flabel" for="rFecha">Fecha <span class="req">*</span></label>
-            <input type="date" id="rFecha" name="fecha" class="finput" required />
-            <span class="ferror" role="alert" aria-live="polite"></span>
-          </div>
-
-          <!-- Hora -->
-          <div class="fgroup">
-            <label class="flabel" for="rHora">Hora <span class="req">*</span></label>
-            <select id="rHora" name="hora" class="fselect" required>
-              <option value="" disabled selected>Hora…</option>
-              <option>12:00</option><option>12:30</option>
-              <option>13:00</option><option>13:30</option>
-              <option>14:00</option><option>19:00</option>
-              <option>19:30</option><option>20:00</option>
-              <option>20:30</option><option>21:00</option>
-              <option>21:30</option>
-            </select>
-            <span class="ferror" role="alert" aria-live="polite"></span>
-          </div>
-
-          <!-- Número de personas -->
-          <div class="fgroup fgroup--full">
-            <label class="flabel">Número de personas <span class="req">*</span></label>
-            <div class="guests-control" role="group" aria-label="Número de personas">
-              <button type="button" class="guest-btn" id="guestMinus" aria-label="Reducir">−</button>
-              <span id="guestCount">2 personas</span>
-              <input type="hidden" id="rPersonas" name="personas" value="2" />
-              <button type="button" class="guest-btn" id="guestPlus" aria-label="Aumentar">+</button>
-            </div>
-          </div>
-
-          <!-- Preferencias (checkboxes) -->
-          <div class="fgroup fgroup--full">
-            <span class="flabel">Preferencias especiales</span>
-            <div class="pref-grid" role="group" aria-label="Preferencias especiales">
-              <label class="pref-chip"><input type="checkbox" name="pref" value="terraza" /><span class="pref-dot"></span>Terraza</label>
-              <label class="pref-chip"><input type="checkbox" name="pref" value="ventana" /><span class="pref-dot"></span>Junto a la ventana</label>
-              <label class="pref-chip"><input type="checkbox" name="pref" value="privado" /><span class="pref-dot"></span>Salón privado</label>
-              <label class="pref-chip"><input type="checkbox" name="pref" value="cumple"  /><span class="pref-dot"></span>Cumpleaños</label>
-              <label class="pref-chip"><input type="checkbox" name="pref" value="aniversario" /><span class="pref-dot"></span>Aniversario</label>
-              <label class="pref-chip"><input type="checkbox" name="pref" value="veg"    /><span class="pref-dot"></span>Menú vegano</label>
-            </div>
-          </div>
-
-          <!-- Notas -->
-          <div class="fgroup fgroup--full">
-            <label class="flabel" for="rNotas">Notas adicionales</label>
-            <textarea id="rNotas" name="notas" class="ftextarea" rows="3"
-                      placeholder="Alergias, solicitudes especiales…" maxlength="500"></textarea>
-          </div>
-
-          <!-- Términos -->
-          <div class="fgroup fgroup--full">
-            <label class="pref-chip pref-chip--terms">
-              <input type="checkbox" id="rTerminos" name="terminos" required />
-              <span class="pref-dot"></span>
-              Acepto la <a href="#" class="link">política de privacidad</a>
-              y los <a href="#" class="link">términos de uso</a>
-            </label>
-            <span class="ferror" id="rTerminosError" role="alert" aria-live="polite"></span>
-          </div>
-
-          <!-- Envío -->
-          <div class="fgroup fgroup--full">
-            <button type="submit" class="btn btn-primary btn-full" id="rSubmit">
-              Confirmar reserva
-            </button>
-            <p class="form-note">
-              Sin cargo alguno. Cancela gratis hasta 2 h antes.<br />
-              ¿Tienes una reserva? <a href="#" class="link">Consulta su estado</a>.
-            </p>
-          </div>
-
-          <!-- Mensaje de éxito (oculto por defecto) -->
-          <div class="form-success" id="rSuccess" role="status" aria-live="polite" hidden>
-            ¡Reserva confirmada! Revisa tu correo con los detalles.
-          </div>
-
-        </form>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-<!-- ================================================
-     SECCIÓN: TABLA DE RESTAURANTES
-================================================ -->
-<section class="restaurants" id="restaurantes">
-  <div class="wrap">
-
-    <div class="section-header reveal">
-      <div>
-        <p class="eyebrow" style="margin-bottom:.7rem">Nuestros socios</p>
-        <h2 class="display">Restaurantes disponibles</h2>
-      </div>
-      <!-- Enlace con ruta vacía -->
-      <a href="#" class="btn btn-outline">Ver todos</a>
-    </div>
-
-    <!-- Tabla de restaurantes -->
-    <div class="table-wrap reveal">
-      <table class="rest-table"
-             summary="Listado de restaurantes disponibles para reserva con su disponibilidad y valoración">
-        <caption>Última actualización: hoy a las <span id="updateTime"></span></caption>
-        <thead>
-        <tr>
-          <th scope="col">Restaurante</th>
-          <th scope="col">Cocina</th>
-          <th scope="col">Valoración</th>
-          <th scope="col">Precio medio</th>
-          <th scope="col">Disponibilidad</th>
-          <th scope="col">Acción</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td data-col="Restaurante">
-            <div class="rest-name-cell">
-              <div class="rest-avatar" style="background:#b5451b">L</div>
-              <div><div class="rest-name">La Brasa</div><div class="rest-sub">Zona Rosa · Bogotá</div></div>
-            </div>
-          </td>
-          <td data-col="Cocina">Parrilla argentina</td>
-          <td data-col="Valoración"><span class="stars">★★★★★</span> 4.9</td>
-          <td data-col="Precio">$85.000 / persona</td>
-          <td data-col="Disponibilidad"><span class="avail avail--open">Disponible</span></td>
-          <td data-col="Acción"><a href="#reservar" class="btn btn-outline btn-sm">Reservar</a></td>
-        </tr>
-        <tr>
-          <td data-col="Restaurante">
-            <div class="rest-name-cell">
-              <div class="rest-avatar" style="background:#c4973a">C</div>
-              <div><div class="rest-name">Cielito</div><div class="rest-sub">Chapinero · Bogotá</div></div>
-            </div>
-          </td>
-          <td data-col="Cocina">Fusión latinoamericana</td>
-          <td data-col="Valoración"><span class="stars">★★★★★</span> 4.8</td>
-          <td data-col="Precio">$95.000 / persona</td>
-          <td data-col="Disponibilidad"><span class="avail avail--few">Pocas mesas</span></td>
-          <td data-col="Acción"><a href="#reservar" class="btn btn-outline btn-sm">Reservar</a></td>
-        </tr>
-        <tr>
-          <td data-col="Restaurante">
-            <div class="rest-name-cell">
-              <div class="rest-avatar" style="background:#4a8c5c">E</div>
-              <div><div class="rest-name">El Jardín</div><div class="rest-sub">Usaquén · Bogotá</div></div>
-            </div>
-          </td>
-          <td data-col="Cocina">Mediterránea</td>
-          <td data-col="Valoración"><span class="stars">★★★★☆</span> 4.6</td>
-          <td data-col="Precio">$70.000 / persona</td>
-          <td data-col="Disponibilidad"><span class="avail avail--open">Disponible</span></td>
-          <td data-col="Acción"><a href="#reservar" class="btn btn-outline btn-sm">Reservar</a></td>
-        </tr>
-        <tr>
-          <td data-col="Restaurante">
-            <div class="rest-name-cell">
-              <div class="rest-avatar" style="background:#2d4a7a">U</div>
-              <div><div class="rest-name">Umami</div><div class="rest-sub">Parque 93 · Bogotá</div></div>
-            </div>
-          </td>
-          <td data-col="Cocina">Japonesa contemporánea</td>
-          <td data-col="Valoración"><span class="stars">★★★★★</span> 4.9</td>
-          <td data-col="Precio">$120.000 / persona</td>
-          <td data-col="Disponibilidad"><span class="avail avail--closed">Sin mesas</span></td>
-          <td data-col="Acción"><button class="btn btn-outline btn-sm" disabled>Lleno</button></td>
-        </tr>
-        <tr>
-          <td data-col="Restaurante">
-            <div class="rest-name-cell">
-              <div class="rest-avatar" style="background:#1a6e8a">M</div>
-              <div><div class="rest-name">Mar Adentro</div><div class="rest-sub">La Candelaria · Bogotá</div></div>
-            </div>
-          </td>
-          <td data-col="Cocina">Mariscos del Pacífico</td>
-          <td data-col="Valoración"><span class="stars">★★★★☆</span> 4.5</td>
-          <td data-col="Precio">$78.000 / persona</td>
-          <td data-col="Disponibilidad"><span class="avail avail--open">Disponible</span></td>
-          <td data-col="Acción"><a href="#reservar" class="btn btn-outline btn-sm">Reservar</a></td>
-        </tr>
-        </tbody>
-        <tfoot>
-        <tr>
-          <td colspan="6">* Precios aproximados. Incluyen entrada, plato principal y bebida sin alcohol.</td>
-        </tr>
-        </tfoot>
-      </table>
-    </div>
-
-  </div>
-</section>
-
-
-<!-- ================================================
-     SECCIÓN: MULTIMEDIA (video + audio)
-================================================ -->
-<section class="media-section" id="experiencia">
-  <div class="wrap media-inner reveal">
-
-    <p class="eyebrow">La experiencia</p>
-    <h2 class="display">Más que una cena</h2>
-
-    <!-- Video de YouTube incrustado (elemento externo + multimedia) -->
-    <div class="video-wrap">
-      <iframe
-              src="https://www.youtube.com/embed/5go5UoY-qug?si=8WRR8lEqbXJlF28K"
-              title="YouTube video player"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              loading="lazy"
-      ></iframe>
-    </div>
-
-    <!-- Audio (elemento multimedia adicional) -->
-    <div class="audio-bar">
-      <span>Ambiente del restaurante</span>
-      <audio controls preload="none">
-        <source src="assets/ambiente.mp3" type="audio/mpeg" />
-        Tu navegador no soporta el elemento de audio.
-      </audio>
-    </div>
-
-  </div>
-</section>
-
-
-<!-- ================================================
-     FOOTER
-================================================ -->
-<footer class="footer">
-  <div class="wrap footer-inner">
-    <p class="footer-logo">Reserva<span> Fácil</span></p>
-    <p class="footer-copy">© 2024 Reserva Fácil · Bogotá, Colombia</p>
-    <nav aria-label="Pie de página">
-      <ul class="footer-links">
-        <li><a href="#">Privacidad</a></li>
-        <li><a href="#">Términos</a></li>
-        <li><a href="#">Contacto</a></li>
-        <li><a href="#">Instagram</a></li>
-      </ul>
-    </nav>
-  </div>
-</footer>
-
-
-<!-- Script principal externo -->
-<script src="main.js" defer></script>
-
+<script src="index.js"></script>
 </body>
 </html>
